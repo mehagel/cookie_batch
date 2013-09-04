@@ -29,13 +29,13 @@
     <h2>Oven</h2>
     <table id="oven">
       <tr>
-        <td id="rack_0">[empty]</td>
-      </tr>
-      <tr>
         <td id="rack_1">[empty]</td>
       </tr>
       <tr>
         <td id="rack_2">[empty]</td>
+      </tr>
+      <tr>
+        <td id="rack_3">[empty]</td>
       </tr>
     </table>
 
@@ -44,7 +44,11 @@
 </div>
 
 <script type="text/template" id="cookie-prep-template">
-  
+  <span><%= model.name %></span><button id=<%= model.id %>>Add to oven</button>
+</script>
+
+<script type="text/template" id="cookie-oven-template">
+  <span><%= model.name %></span><p></p><span><%= model.status() %></span>
 </script>
 
 </body>
