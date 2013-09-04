@@ -3,10 +3,15 @@ var CookieModel = function(data){
 	this.name = data.name;
 	this.bakeTime = data.bakeTime;
 	this.totalTime = 0;
+	this.location = 'prep';
 };
 
 CookieModel.prototype.bake = function(){
 	this.totalTime++;
+	$(this).trigger({
+		type: 'bakeCookie',
+		model: this
+	});
 };
 
 CookieModel.prototype.status = function(){
@@ -16,8 +21,10 @@ CookieModel.prototype.status = function(){
 		return "still_gooey";
 	} else if (this.totalTime == this.bakeTime) {
 		return "just_right";
-	} else {
+	} else if (this.totalTime <= this.bakeTime + 2) {
 		return "crispy";
+	} else {
+		return "burned";
 	}
 };
 
@@ -51,7 +58,9 @@ CookiePrepView.prototype.render = function(){
 CookiePrepView.prototype.createEventHandlers = function(){
 	var that = this;
 	this.$elem.on('click', 'button', function(e){
+			that.model.location = 'oven';
 			var view = new CookieOvenView(that.model);
+			view.createEventHandlers();
 			console.log(view);
 			$('#rack_' + that.model.id.toString()).html(view.render());
 	});
@@ -68,6 +77,14 @@ CookieOvenView.prototype.render = function(){
 	return this.$elem;
 };
 
+CookieOvenView.prototype.createEventHandlers = function(){
+	var that = this;
+	$(this.model).on('bakeCookie', function(e){
+		console.log(e);
+		that.render();
+	});
+};
+
 $(document).ready(function(){
 	cookieCollection = new CookieCollection();
 	$('#new_batch').on('submit', function(e){
@@ -81,5 +98,13 @@ $(document).ready(function(){
 		var view = new CookiePrepView(cookie);
 		view.createEventHandlers();
 		$('#prep_batches').append(view.render());
+	});
+
+	$('#bake').on('click', function(){
+		$.each(cookieCollection.cookies, function(key, val){
+			if (val.location == "oven") {
+				val.bake();
+			}
+		});
 	});
 });
